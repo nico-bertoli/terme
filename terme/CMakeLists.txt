@@ -27,6 +27,30 @@ if(UNIX AND NOT APPLE)
     target_link_libraries(${PROJECT_NAME} PRIVATE X11::X11)
 endif()
 
+#--------------------------------------------- test executable
+file(
+    GLOB TEST_SRC 
+    "${CMAKE_CURRENT_SOURCE_DIR}/test/*.cpp"
+    "${CMAKE_CURRENT_SOURCE_DIR}/test/*.h"
+)
+    
+add_executable(terme_test ${TEST_SRC})
+target_link_libraries(terme_test PRIVATE ${PROJECT_NAME})
+target_include_directories(terme_test PRIVATE "${CMAKE_CURRENT_SOURCE_DIR}/test")
+
+target_link_libraries(terme_test PRIVATE nbkit::nbkit sfml::sfml)
+if(UNIX AND NOT APPLE)
+    target_link_libraries(terme_test PRIVATE X11::X11)
+endif()
+
+# Copy resources to build directory
+if(EXISTS "${CMAKE_CURRENT_SOURCE_DIR}/resources")
+    add_custom_command(TARGET terme_test POST_BUILD
+        COMMAND ${CMAKE_COMMAND} -E copy_directory
+            "${CMAKE_CURRENT_SOURCE_DIR}/resources"
+            "$<TARGET_FILE_DIR:terme_test>/resources"
+    )
+endif()
 #--------------------------------------------- install rules
 install(TARGETS ${PROJECT_NAME}
     EXPORT ${PROJECT_NAME}Targets
