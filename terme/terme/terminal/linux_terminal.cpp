@@ -9,6 +9,7 @@
 #include <string>
 #include <unistd.h> 
 #include <termios.h>
+#include <cstring>
 
 using std::cout;
 
@@ -16,9 +17,15 @@ namespace terme
 {
     LinuxTerminal::LinuxTerminal()
     {
-        struct termios newTermios;
-        if (tcgetattr(STDIN_FILENO, &newTermios) == 0)
+        termios original;
+        if (tcgetattr(STDIN_FILENO, &original) == 0)
         {
+            // save original termios
+            original_termios_ = original;
+            
+            termios newTermios;
+            std::memcpy(&newTermios, &original, sizeof(termios));
+            
             // prevents characters from being printed
             newTermios.c_lflag &= ~(ICANON | ECHO);
             tcsetattr(STDIN_FILENO, TCSANOW, &newTermios);
@@ -27,12 +34,25 @@ namespace terme
         HideCursor();
     }
 
+    LinuxTerminal::~LinuxTerminal()
+    {
+        ShowCursor();
+        if (original_termios_.has_value())
+            tcsetattr(STDIN_FILENO, TCSANOW, &original_termios_.value());
+    }
+
     void LinuxTerminal::HideCursor()
     {
         std::cout << "\033[?25l";
         std::cout.flush();
     }
 
+    void LinuxTerminal::ShowCursor()
+    {
+        std::cout << "\033[?25h";
+        std::cout.flush();
+    }
+    
     void LinuxTerminal::Clear()
     {
         cout << kClearTerminal;

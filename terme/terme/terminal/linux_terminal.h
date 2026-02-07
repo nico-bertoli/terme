@@ -1,6 +1,8 @@
 #pragma once
 #include <terme/terminal/base_terminal.h>
 #include <nbkit/singleton.h>
+#include <termios.h>
+#include <optional>
 
 namespace terme
 {
@@ -10,8 +12,12 @@ namespace terme
 
         static constexpr const char* kClearTerminal = "\033[2J\033[3J";
 
+    private:
+        std::optional<termios> original_termios_;
+
     protected:
         LinuxTerminal();
+        ~LinuxTerminal();
 
     public:
         void Clear() override;
@@ -19,6 +25,7 @@ namespace terme
 
     protected:
         void HideCursor() override;
+        void ShowCursor();
 
     public:
         using BaseTerminal::SetCursorPosition;
