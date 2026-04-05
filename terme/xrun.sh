@@ -1,15 +1,11 @@
 #!/bin/bash
 
-# ====================================================== build with test executable
-./xbuild.sh --test
-
-# ====================================================== run test
-cd build
-if [ -f Release/terme_test ]; then
-    ./Release/terme_test
-elif [ -f terme_test ]; then
-    ./terme_test
+# ====================================================== run example
+if [ -f build/Release/terme_example ]; then
+    ./build/Release/terme_example
+elif [ -f build/terme_example ]; then
+    ./build/terme_example
 else
-    echo "ERROR: terme_test executable not found"
+    echo "ERROR: build/terme_example executable not found"
     exit 1
 fi

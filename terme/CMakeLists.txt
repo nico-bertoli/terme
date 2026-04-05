@@ -1,68 +1,79 @@
-#--------------------------------------------- base setup
 cmake_minimum_required(VERSION 3.22)
 project(terme VERSION 1.0.0)
 
+#----------------------- base configuration
 set(CMAKE_CXX_STANDARD 20)
-set(CMAKE_CXX_STANDARD_REQUIRED ON)
+set(CMAKE_CXX_STANDARD_REQUIRED YES)
 set(CMAKE_CXX_EXTENSIONS OFF)
 
-#--------------------------------------------- create library
-file(GLOB_RECURSE SRC 
-    "${CMAKE_CURRENT_SOURCE_DIR}/terme/*.cpp"
+#----------------------- find dependencies
+find_package(nbkit REQUIRED)
+find_package(miniaudio REQUIRED CONFIG)
+
+#----------------------- find source files
+file(GLOB_RECURSE SOURCES 
+    "${CMAKE_CURRENT_SOURCE_DIR}/terme/*.cpp" 
     "${CMAKE_CURRENT_SOURCE_DIR}/terme/*.h"
 )
 
-add_library(${PROJECT_NAME} ${SRC})
-target_include_directories(${PROJECT_NAME} PUBLIC "${CMAKE_CURRENT_SOURCE_DIR}")
-
-#--------------------------------------------- conan linking
-find_package(nbkit REQUIRED)
-find_package(SFML REQUIRED COMPONENTS system audio)
-
-target_link_libraries(${PROJECT_NAME} PRIVATE nbkit::nbkit sfml::sfml)
-
-# include X11 lib on linux
-if(UNIX AND NOT APPLE)
-    find_package(X11 REQUIRED)
-    target_link_libraries(${PROJECT_NAME} PRIVATE X11::X11)
+if(NOT SOURCES)
+    message(FATAL_ERROR "No source files found in the terme directory!")
 endif()
 
-#--------------------------------------------- test executable
-file(
-    GLOB TEST_SRC 
-    "${CMAKE_CURRENT_SOURCE_DIR}/test/*.cpp"
-    "${CMAKE_CURRENT_SOURCE_DIR}/test/*.h"
+#----------------------- create library
+add_library(${PROJECT_NAME} ${SOURCES})
+
+target_link_libraries(${PROJECT_NAME} PRIVATE nbkit::nbkit)
+target_link_libraries(${PROJECT_NAME} PUBLIC miniaudio::miniaudio)
+
+# On Windows, TUI apps often need the built-in Windows console headers
+if(WIN32)
+    target_link_libraries(${PROJECT_NAME} PRIVATE ws2_32 user32)
+elseif(CMAKE_SYSTEM_NAME STREQUAL "Linux")
+    find_path(TERME_X11_INCLUDE_DIR NAMES X11/Xlib.h REQUIRED)
+    find_library(TERME_X11_LIB NAMES X11 REQUIRED)
+    target_include_directories(${PROJECT_NAME} PUBLIC ${TERME_X11_INCLUDE_DIR})
+    target_link_libraries(${PROJECT_NAME} PUBLIC ${TERME_X11_LIB})
+endif()
+
+target_include_directories(${PROJECT_NAME} PUBLIC 
+    $<BUILD_INTERFACE:${CMAKE_CURRENT_SOURCE_DIR}>
+    $<INSTALL_INTERFACE:include>
 )
 
-if(TEST_SRC)
-    add_executable(terme_test ${TEST_SRC})
-    target_link_libraries(terme_test PRIVATE ${PROJECT_NAME})
-    target_include_directories(terme_test PRIVATE "${CMAKE_CURRENT_SOURCE_DIR}/test")
-
-    target_link_libraries(terme_test PRIVATE nbkit::nbkit sfml::sfml)
-    if(UNIX AND NOT APPLE)
-        target_link_libraries(terme_test PRIVATE X11::X11)
-    endif()
-
-    # copy resources to build directory
-    if(EXISTS "${CMAKE_CURRENT_SOURCE_DIR}/resources")
-        add_custom_command(TARGET terme_test POST_BUILD
-            COMMAND ${CMAKE_COMMAND} -E copy_directory
-                "${CMAKE_CURRENT_SOURCE_DIR}/resources"
-                "$<TARGET_FILE_DIR:terme_test>/resources"
-        )
-    endif()
-endif()
-#--------------------------------------------- install rules
+#----------------------- installation logic
 install(TARGETS ${PROJECT_NAME}
     EXPORT ${PROJECT_NAME}Targets
     LIBRARY DESTINATION lib
     ARCHIVE DESTINATION lib
     RUNTIME DESTINATION bin
-    INCLUDES DESTINATION include
 )
 
 install(DIRECTORY terme/
     DESTINATION include/terme
     FILES_MATCHING PATTERN "*.h"
 )
+
+#----------------------- Example executable
+file(GLOB_RECURSE EXAMPLE_FILES "${CMAKE_CURRENT_SOURCE_DIR}/test/*.cpp") 
+
+if(EXAMPLE_FILES)
+    add_executable(terme_example ${EXAMPLE_FILES})
+    target_link_libraries(terme_example PRIVATE ${PROJECT_NAME} nbkit::nbkit)
+endif()
+
+#----------------------- test
+option(BUILD_TESTING "Build the testing tree" OFF)
+
+if(BUILD_TESTING)
+    enable_testing() 
+    
+    file(GLOB_RECURSE TEST_FILES "${CMAKE_CURRENT_SOURCE_DIR}/test/*.cpp") 
+    
+    if(TEST_FILES)
+        add_executable(terme_test ${TEST_FILES})
+        target_link_libraries(terme_test PRIVATE ${PROJECT_NAME} nbkit::nbkit)
+        
+        add_test(NAME terme_test COMMAND terme_test)
+    endif()
+endif()

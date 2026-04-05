@@ -2,9 +2,10 @@
 
 #if !IS_LINUX_BUILD
 
+#include <terme/terminal/windows_terminal.h>
 #include <terme/terminal/base_terminal.h>
 #include <terme/managers/debug_manager.h>
-#include <terme/general/vector2_int.h> 
+#include <terme/general/vector2_int.h>
 
 #include <iostream>
 #include <string>

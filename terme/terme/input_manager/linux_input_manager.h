@@ -2,10 +2,6 @@
 #include <X11/Xlib.h>
 #include <X11/keysym.h>
 
-#ifdef Status
-#undef Status   //removing cause collides with sfml Status define
-#endif
-
 #include <unordered_map>
 
 #include <nbkit/singleton.h>

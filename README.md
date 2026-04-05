@@ -25,9 +25,6 @@ Update your conanfile.py:
     def requirements(self):
         self.requires("terme/1.0.0@local/stable")
     
-    def configure(self):
-        if "sfml" in self.options:
-            self.options["sfml"].shared = False
 ```
 
 Update your bash build file to download the package from GitHub:
@@ -48,9 +45,6 @@ find_package(terme REQUIRED)
 target_link_libraries(your_target PRIVATE terme::terme)
 ```
 
-#
-This project uses SFML for handling sounds: https://www.sfml-dev.org
+## Audio
 
-SFML is developed by Laurent Gomila and contributors.
-Copyright (C) 2007-2023 Laurent Gomila - laurent@sfml-dev.org
-SFML is licensed under the zlib/libpng license.
+Playback uses [miniaudio](https://github.com/mackron/miniaudio) (Unlicense / MIT-0).
