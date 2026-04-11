@@ -111,7 +111,7 @@ namespace Platformer
         }
 
         //prevent movement when game is over
-        if (terme::Simulation::Instance().GetActiveLevel()->IsGameOver() == false)
+        if (terme::Simulation::Instance().GetActiveLevel().IsGameOver() == false)
         {
             HandleVerticalMovement();
             HandleHorizontalMovement();

@@ -27,8 +27,90 @@ namespace terme
 	size_t Simulation::GetScreenPadding() const { return level_->GetScreenPadding(); }
 	size_t Simulation::GetScreenSizeX() const { return level_->GetWorldSizeX() - 2 * level_->GetScreenPadding(); }
 	size_t Simulation::GetScreenSizeY() const { return level_->GetWorldSizeY() - 2 * level_->GetScreenPadding(); }
-	shared_ptr<Level> Simulation::GetActiveLevel() { return level_; }
+	Level& Simulation::GetActiveLevel()
+	{
+		assert(level_ != nullptr);
+		return *level_;
+	}
+
 	UIPrinter& Simulation::GetUIPrinter() { return *ui_printer_; }
+
+	void Simulation::LoadLevel(Level& level)
+	{
+		this->level_ = &level;
+
+		world_space_.Init(level.GetWorldSizeX(), level.GetWorldSizeY(), level.GetScreenPadding());
+
+#if DEBUG_MODE
+		DebugManager::Instance().Reset(GetScreenSizeX(), GetScreenSizeY(), GetScreenPadding());
+#endif
+		ResetPrinters(level);
+		level.LoadInSimulation();
+	}
+
+	void Simulation::ResetPrinters(Level& level)
+	{
+		Terminal::Instance().SetDefaultColors(level.GetDefaultFrontColor(), level.GetDefaultBackColor());
+		Terminal::Instance().Clear();
+
+		simulation_printer_ = std::make_unique<SimulationPrinter>
+		(
+			GetScreenSizeX(),
+			GetScreenSizeY(),
+			GetScreenPadding(),
+			level.GetBackgroundCharsColor(),
+			level.GetBackgroundFileName()
+		);
+
+		ui_printer_.reset();
+		ui_printer_ = std::make_unique<UIPrinter>(GetScreenSizeX(), GetScreenSizeY(), GetScreenPadding(), level.GetMarginsColor());
+	}
+
+	bool Simulation::IsInsideScreenY(int y_pos) const
+	{
+		return
+			y_pos >= GetScreenPadding() &&
+			y_pos < GetWorldSizeY() - GetScreenPadding();
+	}
+	bool Simulation::IsInsideScreenX(int x_pos) const
+	{
+		return
+			x_pos >= GetScreenPadding() &&
+			x_pos < GetWorldSizeX() - GetScreenPadding();
+	}
+
+	void Simulation::MarkAreaToReprint(std::shared_ptr<GameObject> obj_area)
+	{
+		std::unordered_set<shared_ptr<GameObject>> to_be_reprinted_objects = world_space_.GetAreaTopLayerObjects(obj_area);
+		for (shared_ptr<GameObject> obj : to_be_reprinted_objects)
+			obj->must_be_reprinted_ = true;
+	}
+
+	void Simulation::MarkAreaToReprintAfterMovement(std::shared_ptr<GameObject> obj, int old_pos_x, int old_pos_y)
+	{
+		// finding area = combination of old position area + new position area
+		int min_x = obj->GetPosX() < old_pos_x ? obj->GetPosX() : old_pos_x;
+		int min_y = obj->GetPosY() < old_pos_y ? obj->GetPosY() : old_pos_y;
+		bool is_movement_horizontal = old_pos_x != obj->GetPosX();
+		size_t width = is_movement_horizontal ? obj->GetModelWidth() + 1 : obj->GetModelWidth();
+		size_t height = !is_movement_horizontal ? obj->GetModelHeight() + 1 : obj->GetModelHeight();
+
+		std::unordered_set<shared_ptr<GameObject>> to_be_reprinted_objects = world_space_.GetAreaTopLayerObjects(min_x, min_y, width, height);
+
+		for (shared_ptr<GameObject> obj : to_be_reprinted_objects)
+			obj->must_be_reprinted_ = true;
+	}
+
+	void Simulation::UnloadLevel()
+	{
+		level_ = nullptr;
+		entities_.clear();
+		to_remove_entities_.clear();
+		move_requests_.clear();
+		world_space_.Init(1, 1, 0);
+		simulation_printer_.reset();
+		ui_printer_.reset();
+	}
 
 	void Simulation::SpawnParticles
 	(
@@ -330,72 +412,5 @@ namespace terme
 		obj->CalledBySimMove(direction);
 
 		return true;
-	}
-
-	void Simulation::LoadLevel(shared_ptr<Level> level)
-	{
-		this->level_ = level;
-
-		entities_.clear();
-		world_space_.Init(level->GetWorldSizeX(), level->GetWorldSizeY(), level->GetScreenPadding());
-
-#if DEBUG_MODE
-		DebugManager::Instance().Reset(GetScreenSizeX(), GetScreenSizeY(), GetScreenPadding());
-#endif
-		ResetPrinters(level);
-		level->LoadInSimulation();
-	}
-
-	void Simulation::ResetPrinters(shared_ptr<const Level> level)
-	{
-		Terminal::Instance().SetDefaultColors(level->GetDefaultFrontColor(), level->GetDefaultBackColor());
-		Terminal::Instance().Clear();
-
-		simulation_printer_ = std::make_unique<SimulationPrinter>
-		(
-			GetScreenSizeX(),
-			GetScreenSizeY(),
-			GetScreenPadding(),
-			level->GetBackgroundCharsColor(),
-			level->GetBackgroundFileName()
-		);
-
-		ui_printer_.reset();
-		ui_printer_ = std::make_unique<UIPrinter>(GetScreenSizeX(), GetScreenSizeY(), GetScreenPadding(), level->GetMarginsColor());
-	}
-
-	bool Simulation::IsInsideScreenY(int y_pos) const
-	{
-		return
-			y_pos >= GetScreenPadding() &&
-			y_pos < GetWorldSizeY() - GetScreenPadding();
-	}
-	bool Simulation::IsInsideScreenX(int x_pos) const
-	{
-		return
-			x_pos >= GetScreenPadding() &&
-			x_pos < GetWorldSizeX() - GetScreenPadding();
-	}
-
-	void Simulation::MarkAreaToReprint(std::shared_ptr<GameObject> obj_area)
-	{
-		std::unordered_set<shared_ptr<GameObject>> to_be_reprinted_objects = world_space_.GetAreaTopLayerObjects(obj_area);
-		for (shared_ptr<GameObject> obj : to_be_reprinted_objects)
-			obj->must_be_reprinted_ = true;
-	}
-
-	void Simulation::MarkAreaToReprintAfterMovement(std::shared_ptr<GameObject> obj, int old_pos_x, int old_pos_y)
-	{
-		// finding area = combination of old position area + new position area
-		int min_x = obj->GetPosX() < old_pos_x ? obj->GetPosX() : old_pos_x;
-		int min_y = obj->GetPosY() < old_pos_y ? obj->GetPosY() : old_pos_y;
-		bool is_movement_horizontal = old_pos_x != obj->GetPosX();
-		size_t width = is_movement_horizontal ? obj->GetModelWidth() + 1 : obj->GetModelWidth();
-		size_t height = !is_movement_horizontal ? obj->GetModelHeight() + 1 : obj->GetModelHeight();
-
-		std::unordered_set<shared_ptr<GameObject>> to_be_reprinted_objects = world_space_.GetAreaTopLayerObjects(min_x, min_y, width, height);
-
-		for (shared_ptr<GameObject> obj : to_be_reprinted_objects)
-			obj->must_be_reprinted_ = true;
 	}
 }

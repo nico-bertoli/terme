@@ -45,7 +45,7 @@ namespace terme
 	private:
 		std::unique_ptr<SimulationPrinter> simulation_printer_;
 		std::unique_ptr<UIPrinter> ui_printer_;
-		std::shared_ptr<Level> level_;
+		Level* level_ = nullptr;
 		WorldSpace world_space_;
 		std::unordered_set<std::shared_ptr<ISimulationEntity>> entities_;
 		std::list<std::weak_ptr<ISimulationEntity>> to_remove_entities_;
@@ -56,7 +56,8 @@ namespace terme
 
 		//------------------------------------------------------------------------------------ methods
 	public:
-		void LoadLevel(std::shared_ptr<Level> level);
+		void LoadLevel(Level& level);
+		void UnloadLevel();
 		void Step();
 		bool TryAddEntity(std::shared_ptr<ISimulationEntity> entity);
 		void RemoveEntity(std::shared_ptr<ISimulationEntity> entity);
@@ -66,7 +67,7 @@ namespace terme
 		size_t GetScreenPadding() const;
 		size_t GetScreenSizeX() const;
 		size_t GetScreenSizeY() const;
-		std::shared_ptr<Level> GetActiveLevel();
+		Level& GetActiveLevel();
 		UIPrinter& GetUIPrinter();
 
 		void SpawnParticles
@@ -88,7 +89,7 @@ namespace terme
 		bool CanEntityBeAdded(std::shared_ptr<ISimulationEntity> entity) const;
 		bool IsEntityInSimulation(std::shared_ptr<ISimulationEntity> new_entity) const;
 		void UpdateObjectEndedCollisions(std::shared_ptr<Collider> colliding_obj);
-		void ResetPrinters(std::shared_ptr<const Level> level);
+		void ResetPrinters(Level& level);
 		void EnqueueMoveRequestSortingBySpeed(MoveRequest request);
 		void UpdateAllEntities();
 		void ExecuteMoveRequests();

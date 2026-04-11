@@ -129,7 +129,7 @@ namespace Platformer
     void EndlessRunnerLevel::Update()
     {
         terme::Level::Update();
-        double run_time = terme::Simulation::Instance().GetActiveLevel()->GetLevelTime();
+        double run_time = terme::Simulation::Instance().GetActiveLevel().GetLevelTime();
         int new_time = static_cast<int>(run_time);
         if (shown_time_ != new_time)
         {
