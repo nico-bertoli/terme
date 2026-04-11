@@ -1,6 +1,6 @@
 #include <terme/managers/debug_manager.h>
 
-#if DEBUG_MODE
+#if DEBUG
 
 #include <terme/terminal/terminal.h>
 #include <terme/managers/time_manager.h>

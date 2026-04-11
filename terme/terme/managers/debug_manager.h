@@ -1,7 +1,7 @@
 #pragma once
 #include <terme/config.h>
 
-#if DEBUG_MODE
+#if DEBUG
 
 #include <nbkit/singleton.h>
 #include <terme/managers/debug_manager.h>

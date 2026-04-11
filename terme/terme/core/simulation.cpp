@@ -41,7 +41,7 @@ namespace terme
 
 		world_space_.Init(level.GetWorldSizeX(), level.GetWorldSizeY(), level.GetScreenPadding());
 
-#if DEBUG_MODE
+#if DEBUG
 		DebugManager::Instance().Reset(GetScreenSizeX(), GetScreenSizeY(), GetScreenPadding());
 #endif
 		ResetPrinters(level);
@@ -172,7 +172,7 @@ namespace terme
 		if(has_new_frame_been_generated);
 		{
 			on_frame_generated.Notify();
-			#if DEBUG_MODE && SHOW_FPS
+			#if DEBUG && SHOW_FPS
 						DebugManager::Instance().ShowAverageFPS();
 			#endif
 		}
