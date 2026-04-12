@@ -11,7 +11,6 @@
 #include <cassert>
 #include <algorithm>
 
-using std::shared_ptr;
 using std::string;
 
 namespace terme
@@ -28,14 +27,14 @@ namespace terme
         InitBackground(background_file_name);
     }
 
-    void SimulationPrinter::PrintObject(shared_ptr<GameObject> go)
+    void SimulationPrinter::PrintObject(GameObject* go)
     {
         Model model = go->GetModel();
         assert(model.GetSizeX() > 0 && model.GetSizeY() > 0);
         PrintInternal(go->GetPosX(), go->GetPosY(), go->GetModelWidth(), go->GetModelHeight(), go);
     }
 
-    void SimulationPrinter::ClearObject(shared_ptr<GameObject> obj)
+    void SimulationPrinter::ClearObject(GameObject* obj)
     {
         PrintInternal(obj->GetPosX(), obj->GetPosY(), obj->GetModelWidth(), obj->GetModelHeight(), nullptr);
     }
@@ -45,7 +44,7 @@ namespace terme
         PrintInternal(world_x_pos, world_y_pos, x_size, y_size, nullptr);
     }
 
-    void SimulationPrinter::PrintInternal(int world_x_pos, int world_y_pos, size_t x_size, size_t y_size, shared_ptr<GameObject> go)
+    void SimulationPrinter::PrintInternal(int world_x_pos, int world_y_pos, size_t x_size, size_t y_size, GameObject* go)
     {
         terminal_.SetColor(go == nullptr ? nullptr : go->GetColor(), go == nullptr ? nullptr : go->GetBackColor());
         for (int y_screen = ConvertWorldPosToScreenPos(world_y_pos), y_model = 0; y_model < y_size && y_screen < screen_size_y_; ++y_screen, ++y_model)

@@ -2,9 +2,6 @@
 #include <terme/managers/time_manager.h>
 #include <terme/core/simulation.h>
 
-using std::shared_ptr;
-using std::weak_ptr;
-
 namespace terme
 {
 	GameObject::GameObject(int x_pos, int y_pos) :
@@ -59,10 +56,10 @@ namespace terme
 		if (direction == Direction::kLeft || direction == Direction::kRight)
 		{
 			if (round(x_pos_continuous_) != x_pos_)
-				Simulation::Instance().RequestMovement(std::dynamic_pointer_cast<GameObject>(shared_from_this()), direction, move_speed);
+				Simulation::Instance().RequestMovement(this, direction, move_speed);
 		}
 		else if (round(y_pos_continuous_) != y_pos_)
-			Simulation::Instance().RequestMovement(std::dynamic_pointer_cast<GameObject>(shared_from_this()), direction, move_speed);
+			Simulation::Instance().RequestMovement(this, direction, move_speed);
 	}
 
 	Model GameObject::CreteModelUsingChar(char model_char, size_t size_x, size_t size_y) const
@@ -83,7 +80,7 @@ namespace terme
 
 		model_ = &new_model;
 
-		Simulation::Instance().MarkAreaToReprint(std::dynamic_pointer_cast<GameObject>(shared_from_this()));
+		Simulation::Instance().MarkAreaToReprint(this);
 	}
 
 	void GameObject::CalledBySimMove(Direction direction)
@@ -107,27 +104,6 @@ namespace terme
 			x_pos_continuous_ = x_pos_;
 			break;
 		}
-		on_move.Notify(std::dynamic_pointer_cast<GameObject>(shared_from_this()), direction);
-	}
-
-	void GameObject::InsertInListUsingRule(shared_ptr<GameObject> obj, std::list<shared_ptr<GameObject>>& list, bool(*insert_rule)(shared_ptr<GameObject> new_item, std::shared_ptr<GameObject> list_item))
-	{
-		auto it = list.begin();
-		for (; it != list.end(); ++it)
-			if(insert_rule(obj,*it))
-				break;
-		list.insert(it, obj);
-	}
-
-	void GameObject::InsertInListUsingRule(shared_ptr<GameObject> obj, std::list<weak_ptr<GameObject>>& list, bool(*insert_rule)(shared_ptr<GameObject> new_item, std::shared_ptr<GameObject> list_item))
-	{
-		auto it = list.begin();
-		for (; it != list.end(); ++it)
-		{
-			auto it_shared_ptr = it->lock();
-			if (it_shared_ptr != nullptr && insert_rule(obj, it_shared_ptr))
-				break;
-		}
-		list.insert(it, obj);
+		on_move.Notify(this, direction);
 	}
 }

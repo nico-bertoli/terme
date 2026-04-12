@@ -4,8 +4,8 @@
 
 namespace terme
 {
-	MovingStraightObject::MovingStraightObject(int x_pos, int y_pos, Direction move_dir, double move_speed)
-		:Collider(x_pos, y_pos), move_direction_(move_dir), move_speed_(move_speed){ }
+	MovingStraightObject::MovingStraightObject(int x_pos, int y_pos, Direction move_direction, double move_speed)
+		:Collider(x_pos, y_pos), move_direction_(move_direction), move_speed_(move_speed){ }
 
 	void MovingStraightObject::Update()
 	{

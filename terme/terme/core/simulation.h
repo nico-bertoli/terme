@@ -5,6 +5,7 @@
 #include <terme/printers/ui_printer.h>
 #include <terme/printers/simulation_printer.h>
 #include <list>
+#include <unordered_map>
 #include <unordered_set>
 #include <optional>
 #include <memory>
@@ -27,14 +28,15 @@ namespace terme
 		friend class GameObject;
 
 		//------------------------------------------------------------------------------------ structs
+	private:
 		struct MoveRequest
 		{
-			std::weak_ptr<GameObject> object;
-			Direction move_dir;
+			GameObject* object;
+			Direction move_direction;
 			double move_speed;
 
-			MoveRequest(std::shared_ptr<GameObject> object, Direction direction, double speed)
-				:object(object), move_dir(direction), move_speed(speed){ }
+			MoveRequest(GameObject* object, Direction direction, double speed)
+				: object(object), move_direction(direction), move_speed(speed) { }
 		};
 
 		//------------------------------------------------------------------------------------ fields
@@ -47,11 +49,9 @@ namespace terme
 		std::unique_ptr<UIPrinter> ui_printer_;
 		Level* level_ = nullptr;
 		WorldSpace world_space_;
-		std::unordered_set<std::shared_ptr<ISimulationEntity>> entities_;
-		std::list<std::weak_ptr<ISimulationEntity>> to_remove_entities_;
+		std::unordered_map<ISimulationEntity*, std::unique_ptr<ISimulationEntity>> entities_;
+		std::list<ISimulationEntity*> to_remove_entities_;
 
-		// move requests are sorted from slower to faster
-		// slower objects have to move before faster ones to prevent false collisions detection
 		std::list<MoveRequest> move_requests_;
 
 		//------------------------------------------------------------------------------------ methods
@@ -59,9 +59,9 @@ namespace terme
 		void LoadLevel(Level& level);
 		void UnloadLevel();
 		void Step();
-		bool TryAddEntity(std::shared_ptr<ISimulationEntity> entity);
-		void RemoveEntity(std::shared_ptr<ISimulationEntity> entity);
-		void RequestMovement(std::shared_ptr<GameObject> applicant_obj, Direction move_dir, double move_speed);
+		bool TryAddEntity(std::unique_ptr<ISimulationEntity>&& entity_ptr);
+		void RemoveEntity(ISimulationEntity* entity);
+		void RequestMovement(GameObject* applicant_obj, Direction move_direction, double move_speed);
 		size_t GetWorldSizeX() const;
 		size_t GetWorldSizeY() const;
 		size_t GetScreenPadding() const;
@@ -85,10 +85,10 @@ namespace terme
 		);
 
 	private:
-		bool TryMoveObjectAtDirection(std::shared_ptr<GameObject> obj, Direction direction);
-		bool CanEntityBeAdded(std::shared_ptr<ISimulationEntity> entity) const;
-		bool IsEntityInSimulation(std::shared_ptr<ISimulationEntity> new_entity) const;
-		void UpdateObjectEndedCollisions(std::shared_ptr<Collider> colliding_obj);
+		bool TryMoveObjectAtDirection(GameObject* obj, Direction direction);
+		bool CanEntityBeAdded(ISimulationEntity* entity) const;
+		bool IsEntityInSimulation(const ISimulationEntity* entity) const;
+		void UpdateObjectEndedCollisions(Collider* colliding_obj);
 		void ResetPrinters(Level& level);
 		void EnqueueMoveRequestSortingBySpeed(MoveRequest request);
 		void UpdateAllEntities();
@@ -101,8 +101,8 @@ namespace terme
 		bool IsInsideScreenY(int y_pos) const;
 		bool IsCoordinateInsideScreenSpace(int x_pos, int y_pos) const { return IsInsideScreenX(x_pos) && IsInsideScreenY(y_pos); }
 
-		void MarkAreaToReprint(std::shared_ptr<GameObject> obj_area);
-		void MarkAreaToReprintAfterMovement(std::shared_ptr<GameObject> obj, int old_pos_x, int old_pos_y);
-		void UnmarkObjectToReprint(std::shared_ptr<GameObject> obj) { obj->must_be_reprinted_ = false; }
+		void MarkAreaToReprint(GameObject* obj_area);
+		void MarkAreaToReprintAfterMovement(GameObject* obj, int old_pos_x, int old_pos_y);
+		void UnmarkObjectToReprint(GameObject* obj) { obj->must_be_reprinted_ = false; }
 	};
 }

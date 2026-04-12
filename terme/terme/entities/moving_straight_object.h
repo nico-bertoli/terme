@@ -15,7 +15,7 @@ namespace terme
 
 		//---------------------------------------------------------- methods
 	public:
-		MovingStraightObject(int x_pos, int y_pos, Direction move_dir, double move_speed);
+		MovingStraightObject(int x_pos, int y_pos, Direction move_direction, double move_speed);
 
 	protected:
 		void Update() override;

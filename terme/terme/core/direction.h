@@ -10,6 +10,8 @@ namespace terme
 	{
 		inline Direction GetInverseDirection(Direction direction)
 		{
+			assert(direction != Direction::kCount);
+
 			switch (direction)
 			{
 			case Direction::kUp:
@@ -27,6 +29,8 @@ namespace terme
 
 		inline Direction GetClockwiseDirection(Direction direction)
 		{
+			assert(direction != Direction::kCount);
+
 			switch (direction)
 			{
 			case Direction::kUp:
@@ -42,10 +46,11 @@ namespace terme
 			}
 		}
 
-		inline bool IsDirectionHorizontal(Direction dir)
+		inline bool IsDirectionHorizontal(Direction direction)
 		{
-			assert(dir != Direction::kCount);
-			return dir == Direction::kLeft || dir == Direction::kRight;
+			assert(direction != Direction::kCount);
+			
+			return direction == Direction::kLeft || direction == Direction::kRight;
 		}
 	}
 }

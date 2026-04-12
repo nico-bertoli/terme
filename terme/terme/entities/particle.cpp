@@ -3,8 +3,6 @@
 #include <terme/core/direction.h>
 #include <terme/core/simulation.h>
 
-using std::weak_ptr;
-
 namespace terme
 {
 	Particle::Particle
@@ -54,7 +52,7 @@ namespace terme
 			if (direction_utils::IsDirectionHorizontal(move_directions_[i]))
 				move_speeds_[i] *= 2;
 
-		on_move.Subscribe([this](weak_ptr<GameObject> _, Direction __) { OnMoveCallback(); });
+		on_move.Subscribe([this](GameObject*, Direction) { OnMoveCallback(); });
 	}
 
 	void Particle::InitModel()
@@ -72,6 +70,6 @@ namespace terme
 	void Particle::OnMoveCallback()
 	{
 		if (--remaining_movements_before_destruction_ == 0)
-			Simulation::Instance().RemoveEntity(shared_from_this());
+			Simulation::Instance().RemoveEntity(this);
 	}
 }

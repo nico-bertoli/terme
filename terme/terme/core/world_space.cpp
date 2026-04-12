@@ -1,36 +1,35 @@
 #include <terme/core/world_space.h>
 #include <terme/entities/collider.h>
+#include <terme/entities/game_object.h>
 
-using std::shared_ptr;
+#include <algorithm>
+
 using std::unordered_set;
 
 namespace terme
 {
-	shared_ptr<FakeCollider> WorldSpace::kWorldMargin = std::make_shared<FakeCollider>();
-	shared_ptr<FakeCollider> WorldSpace::kScreenMargin = std::make_shared<FakeCollider>();
-
 	void WorldSpace::Init(int x_size, int y_size, size_t screen_padding)
 	{
 		space_.Clear();
 		space_.Resize(x_size, y_size);
 
-		for (Cell cell : space_)
+		for (Cell& cell : space_)
 			cell.objects.clear();
-			
+
 		this->screen_padding_ = screen_padding;
 	}
 
-	void WorldSpace::InsertObject(shared_ptr<GameObject> obj)
+	void WorldSpace::InsertObject(GameObject* obj)
 	{
 		WriteSpace(obj->GetPosX(), obj->GetPosY(), obj->GetModelWidth(), obj->GetModelHeight(), obj);
 	}
 
-	void WorldSpace::RemoveObject(shared_ptr<GameObject> obj)
+	void WorldSpace::RemoveObject(GameObject* obj)
 	{
 		EraseSpace(obj->GetPosX(), obj->GetPosY(), obj->GetModelWidth(), obj->GetModelHeight(), obj);
 	}
 
-	void WorldSpace::MoveObject(shared_ptr<GameObject> obj, Direction direction)
+	void WorldSpace::MoveObject(GameObject* obj, Direction direction)
 	{
 		switch (direction)
 		{
@@ -70,7 +69,7 @@ namespace terme
 		}
 	}
 
-	void WorldSpace::WriteSpace(int x_start, int y_start, size_t width, size_t height, shared_ptr<GameObject> obj)
+	void WorldSpace::WriteSpace(int x_start, int y_start, size_t width, size_t height, GameObject* obj)
 	{
 		assert(obj != nullptr);
 
@@ -79,24 +78,27 @@ namespace terme
 			{
 				Cell& cell = space_.Get(x, y);
 
-					GameObject::InsertInListUsingRule
-				(
-					obj, 
-					cell.objects ,
+				{
 					// add high sorting layer objects at top of list
-					[](shared_ptr<GameObject> new_item, shared_ptr<GameObject> list_item){ return new_item->GetSortingLayer() >= list_item->GetSortingLayer();}
-				);
+					auto it = std::find_if
+					(
+						cell.objects.begin(),
+						cell.objects.end(),
+						[obj](GameObject* list_item) { return obj->GetSortingLayer() >= list_item->GetSortingLayer(); }
+					);
+					cell.objects.insert(it, obj);
+				}
 
-				shared_ptr<Collider> obj_collider = std::dynamic_pointer_cast<Collider>(obj);
+				Collider* obj_collider = dynamic_cast<Collider*>(obj);
 				if (obj_collider)
 				{
-					assert(cell.collider.expired() || cell.collider.lock() == obj_collider);
+					assert(cell.collider == nullptr || cell.collider == obj_collider);
 					cell.collider = obj_collider;
 				}
 			}
 	}
 
-	void WorldSpace::EraseSpace(int x_start, int y_start, size_t width, size_t height, shared_ptr<GameObject> obj)
+	void WorldSpace::EraseSpace(int x_start, int y_start, size_t width, size_t height, GameObject* obj)
 	{
 		assert(obj != nullptr);
 
@@ -108,8 +110,7 @@ namespace terme
 				//------------------ erase from cell.objects
 				for (auto it = cell.objects.begin(); it != cell.objects.end(); ++it)
 				{
-					auto it_shared_pt = it->lock();
-					if (it_shared_pt != nullptr && it_shared_pt == obj)
+					if (*it == obj)
 					{
 						cell.objects.erase(it);
 						break;
@@ -117,22 +118,22 @@ namespace terme
 				}
 
 				//------------------ erase collider
-				shared_ptr<Collider> obj_collider = std::dynamic_pointer_cast<Collider>(obj);
+				Collider* obj_collider = dynamic_cast<Collider*>(obj);
 				if (obj_collider)
 				{
-					assert(cell.collider.expired() || cell.collider.lock() == obj_collider);
-					cell.collider.reset();
+					assert(cell.collider == nullptr || cell.collider == obj_collider);
+					cell.collider = nullptr;
 				}
 			}
 	}
 
-	bool WorldSpace::IsCollidersAreaEmpty(int starting_x, int starting_y, size_t width, size_t height, unordered_set<shared_ptr<Collider>>& out_area_objects) const
+	bool WorldSpace::IsCollidersAreaEmpty(int starting_x, int starting_y, size_t width, size_t height, unordered_set<Collider*>& out_area_objects) const
 	{
-		for (int y = starting_y; y < starting_y + height; ++y)
+		for (int y = starting_y; y < starting_y + int(height); ++y)
 		{
-			for (int x = starting_x; x < starting_x + width; ++x)
+			for (int x = starting_x; x < starting_x + int(width); ++x)
 			{
-				auto cell_collider = space_.Get(x, y).collider.lock();
+				Collider* cell_collider = space_.Get(x, y).collider;
 				if (IsCoordinateInsideSpace(x, y) && cell_collider != nullptr)
 					out_area_objects.insert(cell_collider);
 			}
@@ -145,7 +146,7 @@ namespace terme
 	{
 		for (int y = starting_y; y < starting_y + height; ++y)
 			for (int x = starting_x; x < starting_x + width; ++x)
-				if (IsCoordinateInsideSpace(x, y) && space_.Get(x, y).collider.expired() == false)
+				if (IsCoordinateInsideSpace(x, y) && space_.Get(x, y).collider != nullptr)
 					return false;
 
 		return true;
@@ -170,12 +171,12 @@ namespace terme
 
 	bool WorldSpace::CanObjectMoveAtDirection
 	(
-		shared_ptr<const GameObject> object,
+		const GameObject* object,
 		Direction direction,
-		unordered_set<shared_ptr<Collider>>& colliding_objects
+		unordered_set<Collider*>& colliding_objects
 	) const
 	{
-		shared_ptr<const Collider> collider_obj = std::dynamic_pointer_cast<const Collider>(object);
+		const Collider* collider_obj = dynamic_cast<const Collider*>(object);
 
 		switch (direction)
 		{
@@ -197,7 +198,7 @@ namespace terme
 				return false;
 			}
 
-			//obj collision
+//obj collision
 			if (collider_obj != nullptr && IsCollidersAreaEmpty(collider_obj->GetPosX(), moving_to_y, collider_obj->GetModelWidth(), 1, colliding_objects) == false)
 				return false;
 
@@ -207,21 +208,21 @@ namespace terme
 		{
 			int moving_to_y = object->GetPosY() - 1;
 
-			//exiting world
+//exiting world
 			if (moving_to_y == -1)
 			{
 				colliding_objects.insert(kWorldMargin);
 				return false;
 			}
 
-			//exiting screen space
-			if ((object->CanExitScreenSpace() == false) && (moving_to_y == screen_padding_ - 1))
+//exiting screen space
+			if ((object->CanExitScreenSpace() == false) && (moving_to_y == static_cast<int>(screen_padding_) - 1))
 			{
 				colliding_objects.insert(kScreenMargin);
 				return false;
 			}
 
-			//obj collision
+//obj collision
 			if (collider_obj != nullptr && IsCollidersAreaEmpty(collider_obj->GetPosX(), moving_to_y, collider_obj->GetModelWidth(), 1, colliding_objects) == false)
 				return false;
 
@@ -238,14 +239,14 @@ namespace terme
 				return false;
 			}
 
-			//exiting screen space
+//exiting screen space
 			if ((object->CanExitScreenSpace() == false) && (moving_to_x == space_.GetSizeX() - screen_padding_))
 			{
 				colliding_objects.insert(kScreenMargin);
 				return false;
 			}
 
-			//obj collision
+//obj collision
 			if (collider_obj != nullptr && IsCollidersAreaEmpty(moving_to_x, collider_obj->GetPosY(), 1, collider_obj->GetModelHeight(), colliding_objects) == false)
 				return false;
 
@@ -255,21 +256,21 @@ namespace terme
 		{
 			int moving_to_x = object->GetPosX() - 1;
 
-			//exiting world
+//exiting world
 			if (moving_to_x == -1)
 			{
 				colliding_objects.insert(kWorldMargin);
 				return false;
 			}
 
-			//exiting screen space
+//exiting screen space
 			if ((object->CanExitScreenSpace() == false) && (moving_to_x == screen_padding_ - 1))
 			{
 				colliding_objects.insert(kScreenMargin);
 				return false;
 			}
 
-			//obj collision
+//obj collision
 			if (collider_obj != nullptr && IsCollidersAreaEmpty(moving_to_x, collider_obj->GetPosY(), 1, collider_obj->GetModelHeight(), colliding_objects) == false)
 				return false;
 
@@ -280,32 +281,21 @@ namespace terme
 		}
 	}
 
-	unordered_set<shared_ptr<GameObject>> WorldSpace::GetAreaTopLayerObjects(shared_ptr<GameObject> obj)
+	unordered_set<GameObject*> WorldSpace::GetAreaTopLayerObjects(GameObject* obj)
 	{
 		return GetAreaTopLayerObjects(obj->GetPosX(), obj->GetPosY(), obj->GetModelWidth(), obj->GetModelHeight());
 	}
 
-	unordered_set<shared_ptr<GameObject>> WorldSpace::GetAreaTopLayerObjects(int starting_x, int starting_y, size_t width, size_t height)
+	unordered_set<GameObject*> WorldSpace::GetAreaTopLayerObjects(int starting_x, int starting_y, size_t width, size_t height)
 	{
-		unordered_set<shared_ptr<GameObject>> objects;
+		unordered_set<GameObject*> objects;
 		for (int y = starting_y; y < starting_y + height; ++y)
 		{
 			for (int x = starting_x; x < starting_x + width; ++x)
 			{
 				Cell& cell = space_.Get(x, y);
-				if (cell.objects.size() > 0)
-				{
-					auto top_item = space_.Get(x, y).objects.begin();
-					while (top_item != space_.Get(x, y).objects.end())
-					{
-						auto top_item_sp = top_item->lock();
-						if (top_item_sp != nullptr)
-						{
-							objects.insert(top_item_sp);
-							break;
-						}	
-					}
-				}
+				if (!cell.objects.empty())
+					objects.insert(cell.objects.front());
 			}
 		}
 		return objects;

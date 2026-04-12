@@ -7,9 +7,6 @@
 #include <nbkit/matrix.h>
 #include <nbkit/event.h>
 
-#include <list>
-#include <memory>
-
 namespace terme
 {
 	using Model = nbkit::Matrix<char>;
@@ -20,7 +17,7 @@ namespace terme
 
 		//---------------------------------------------------------- fields
 	public:
-		nbkit::Event<std::weak_ptr<GameObject>, Direction> on_move;
+		nbkit::Event<GameObject*, Direction> on_move;
 		// generic on destroy event could be added
 
 	protected:
@@ -55,8 +52,6 @@ namespace terme
 		size_t GetModelHeight()const { return model_->GetSizeY(); }
 		const Model& GetModel()const { return *model_; }
 		virtual bool CanExitScreenSpace() const = 0;
-		static void InsertInListUsingRule(std::shared_ptr<GameObject> obj, std::list<std::shared_ptr<GameObject>>& list, bool(*insert_rule)(std::shared_ptr<GameObject> new_item, std::shared_ptr<GameObject> list_item));
-		static void InsertInListUsingRule(std::shared_ptr<GameObject> obj, std::list<std::weak_ptr<GameObject>>& list, bool(*insert_rule)(std::shared_ptr<GameObject> new_item, std::shared_ptr<GameObject> list_item));
 
 	protected:
 		virtual void InitModel() = 0;
