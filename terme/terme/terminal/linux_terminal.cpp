@@ -63,7 +63,7 @@ namespace terme
 
     void LinuxTerminal::SetCursorPosition(const vector2_int& position)
     {
-        printf("\033[%d;%dH", position.Y + 1, position.X + 1);
+        std::cout << "\033[" << (position.Y + 1) << ';' << (position.X + 1) << 'H';
     }
 }
 

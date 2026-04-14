@@ -12,9 +12,7 @@ namespace terme
 
     void UIPrinter::PrintWindow(const Frame& window, TerminalColor color, WindowPosition window_position)
     {
-        if (window.GetSizeY() == 0)
-            return;
-
+        assert(window.GetSizeY() > 0);
         assert(screen_size_x_ > window.GetSizeX());
         size_t left_window_offset = (screen_size_x_ - window.GetSizeX()) / 2;
 
@@ -40,6 +38,7 @@ namespace terme
             terminal_.SetCursorPosition(left_window_offset + kLeftMarginSize, y + print_start_y);
             terminal_.Cout(line);
         }
+        terminal_.Flush();
     }
 
     void UIPrinter::PrintOnHeader(const string& header, int x_pos, TerminalColor color)

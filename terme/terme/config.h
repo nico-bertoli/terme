@@ -2,7 +2,7 @@
 
 // settings
 #define ALLOW_SOUNDS 1
-#define DEBUG 0
+#define DEBUG 1
 
 // debug details
 #define SHOW_COUT_CALLS 1

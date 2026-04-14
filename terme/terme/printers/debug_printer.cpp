@@ -35,5 +35,6 @@ namespace terme
         terminal_.SetColor(kDebugColor);
         terminal_.SetCursorPosition(0, GetMaxTerminalY() + kGenericLogPosition + line_index);
         std::cout << log;
+        std::cout.flush();
     }
 }
