@@ -1,5 +1,5 @@
 #pragma once
-#include <terme/config.h>
+#include <terme/settings.h>
 
  #if IS_LINUX_BUILD
     #include <terme/terminal/linux_terminal.h>

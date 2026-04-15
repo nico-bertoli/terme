@@ -1,5 +1,5 @@
 #pragma once
-#include <terme/config.h>
+#include <terme/settings.h>
 #include <terme/core/frame.h>
 #include <terme/terminal/terminal.h>
 #include <terme/printers/printer.h>

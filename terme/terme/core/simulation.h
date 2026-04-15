@@ -1,6 +1,6 @@
 #pragma once
 
-#include <terme/config.h>
+#include <terme/settings.h>
 #include <terme/core/world_space.h>
 #include <terme/printers/ui_printer.h>
 #include <terme/printers/simulation_printer.h>

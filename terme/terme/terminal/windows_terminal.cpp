@@ -1,4 +1,4 @@
-#include <terme/config.h>
+#include <terme/settings.h>
 
 #if !IS_LINUX_BUILD
 

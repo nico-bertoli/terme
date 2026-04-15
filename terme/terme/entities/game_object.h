@@ -1,5 +1,5 @@
 #pragma once
-#include <terme/config.h>
+#include <terme/settings.h>
 #include <terme/core/direction.h>
 #include <terme/entities/i_simulation_entity.h>
 #include <terme/terminal/terminal.h>

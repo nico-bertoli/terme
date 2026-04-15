@@ -1,5 +1,5 @@
 #pragma once
-#include <terme/config.h>
+#include <terme/settings.h>
 #include <nbkit/matrix.h>
 
 #include <vector>

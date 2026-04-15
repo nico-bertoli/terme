@@ -1,9 +1,8 @@
-#include <terme/managers/debug_manager.h>
+#include "terme/settings.h"
+#include "terme/managers/debug_manager.h"
+#include "terme/terminal/terminal.h"
+#include "terme/managers/time_manager.h"
 
-#if DEBUG
-
-#include <terme/terminal/terminal.h>
-#include <terme/managers/time_manager.h>
 
 namespace terme
 {
@@ -16,6 +15,9 @@ namespace terme
 		size_t screenPadding
 	)
 	{
+		if constexpr (settings::kDebug == false)
+			return;
+
 		fpsRecord.clear();
 		coutCallsCount = 0;
 
@@ -24,12 +26,18 @@ namespace terme
 
 	void DebugManager::ShowAverageFPS()
 	{
+		if constexpr (settings::kDebug == false)
+			return;
+
 		if (debugPrinter != nullptr)
 			debugPrinter->PrintFpsString(GetAverageFps());
 	}
 
 	size_t DebugManager::GetAverageFps()
 	{
+		if constexpr (settings::kDebug == false)
+			return -1;
+
 		double fps = TimeManager::Instance().GetFPS();
 		fpsRecord.push_back(fps);
 
@@ -49,6 +57,9 @@ namespace terme
 
 	void DebugManager::IncrementCoutCalls()
 	{
+		if constexpr (settings::kDebug == false)
+			return;
+
 		if (debugPrinter == nullptr)
 			return;
 
@@ -58,4 +69,3 @@ namespace terme
 	}
 
 }
-#endif

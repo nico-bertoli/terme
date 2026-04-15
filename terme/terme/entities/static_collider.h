@@ -1,5 +1,5 @@
 #pragma once
-#include <terme/config.h>
+#include <terme/settings.h>
 #include <terme/entities/variable_size_collider.h>
 
 namespace terme

@@ -7,17 +7,13 @@ namespace terme
     void BaseTerminal::Cout(std::string_view s) const
     {
         std::cout << s;
-#if DEBUG && SHOW_COUT_CALLS
         DebugManager::Instance().IncrementCoutCalls();
-#endif
     }
 
     void BaseTerminal::Cout(char c) const
     {
         std::cout << c;
-#if DEBUG && SHOW_COUT_CALLS
         DebugManager::Instance().IncrementCoutCalls();
-#endif
     }
 
     void BaseTerminal::SetColor(const char* front_color, const char* back_color)

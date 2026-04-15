@@ -1,7 +1,4 @@
 #pragma once
-#include <terme/config.h>
-
-#if DEBUG
 
 #include <nbkit/singleton.h>
 #include <terme/managers/debug_manager.h>
@@ -39,4 +36,3 @@ namespace terme
 		size_t GetAverageFps();
 	};
 }
-#endif

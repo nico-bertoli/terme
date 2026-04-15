@@ -1,4 +1,4 @@
-#include <terme/config.h>
+#include <terme/settings.h>
 
 #define MINIAUDIO_IMPLEMENTATION
 #include <miniaudio.h>
@@ -54,7 +54,9 @@ namespace terme
 		if (ma_engine_init(nullptr, &st.engine) == MA_SUCCESS)
 		{
 			st.engineOk = true;
-			ma_engine_set_volume(&st.engine, ALLOW_SOUNDS ? 1.0f : 0.0f);
+			
+			static constexpr float volume = settings::kAllowSounds ? 1.0f : 0.0f;
+			ma_engine_set_volume(&st.engine, volume);
 		}
 	}
 

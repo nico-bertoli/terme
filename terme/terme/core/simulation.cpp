@@ -172,9 +172,7 @@ namespace terme
 		if (has_new_frame_been_generated)
 		{
 			on_frame_generated.Notify();
-#if DEBUG && SHOW_FPS
 			DebugManager::Instance().ShowAverageFPS();
-#endif
 		}
 
 		on_simulation_stepped.Notify();
