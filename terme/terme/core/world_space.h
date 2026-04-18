@@ -1,11 +1,13 @@
 #pragma once
-#include <terme/core/direction.h>
-#include <terme/entities/fake_collider.h>
-#include <nbkit/matrix.h>
+
+#include "terme/core/direction.h"
+#include "terme/entities/fake_collider.h"
 
 #include <cassert>
-#include <unordered_set>
 #include <list>
+#include <unordered_set>
+
+#include <nbkit/matrix.h>
 
 namespace terme
 {
@@ -26,12 +28,12 @@ namespace terme
 		//---------------------------------------------------------- margins
 	
 	private:
-		static inline FakeCollider g_world_margin_instance;
-		static inline FakeCollider g_screen_margin_instance;
+		static inline FakeCollider world_margin_instance_;
+		static inline FakeCollider screen_margin_instance_;
 
 	public:
-		static inline Collider* kWorldMargin = &g_world_margin_instance;
-		static inline Collider* kScreenMargin = &g_screen_margin_instance;
+		static inline Collider* kWorldMargin = &world_margin_instance_;
+		static inline Collider* kScreenMargin = &screen_margin_instance_;
 
 		//---------------------------------------------------------- fields
 	private:

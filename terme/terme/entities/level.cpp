@@ -1,9 +1,7 @@
-#include <terme/entities/level.h>
-
-#include <terme/managers/time_manager.h>
-#include <terme/input_manager/input_manager.h>
-#include <terme/core/simulation.h>
-#include <terme/managers/audio_manager.h>
+#include "terme/entities/level.h"
+#include "terme/core/simulation.h"
+#include "terme/input_manager/input_manager.h"
+#include "terme/managers/time_manager.h"
 
 namespace terme
 {

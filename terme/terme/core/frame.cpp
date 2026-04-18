@@ -1,7 +1,8 @@
-#include <terme/core/frame.h>
+#include "terme/core/frame.h"
+
+#include <algorithm>
 #include <cassert>
 #include <string>
-#include <algorithm>
 
 using std::string;
 
@@ -27,13 +28,13 @@ namespace terme
             RemoveNotAllowedChars(line);
 
             if (y == 0)
-                chars.Resize(line.size(), 0);
+                chars_.Resize(line.size(), 0);
 
-            assert(line.size() == chars.GetSizeX());
+            assert(line.size() == chars_.GetSizeX());
 
-            chars.IncreaseSizeY();
+            chars_.IncreaseSizeY();
             for (int x = 0; x < line.length(); ++x)
-                chars.Get(x, y) = line[x];
+                chars_.Get(x, y) = line[x];
 
             line = "";
             ++y;
@@ -56,13 +57,13 @@ namespace terme
         {
             for (size_t x = 0; x < GetSizeX(); ++x)
             {
-                char c = chars.Get(x, y);
+                char c = chars_.Get(x, y);
 
                 // insert score message
                 if (c == write_over_char)
                 {
                     for (int insert_it = 0; insert_it < written_string.size(); ++insert_it)
-                        chars.Get(x + insert_it, y) = written_string[insert_it];
+                        chars_.Get(x + insert_it, y) = written_string[insert_it];
 
                     x += written_string.size() - 1;
                 }

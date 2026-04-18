@@ -1,6 +1,7 @@
 #pragma once
-#include <terme/printers/printer.h>
-#include <terme/terminal/terminal.h>
+
+#include "terme/printers/printer.h"
+#include "terme/terminal/terminal.h"
 
 #include <iostream>
 #include <string>
@@ -13,7 +14,7 @@ namespace terme
     private:
         static constexpr TerminalColor kDebugColor = color::kCyan;
         static constexpr size_t kFpsPosition = 1;
-        static constexpr size_t kPositoinCoutCalls = 2;
+        static constexpr size_t kPositionCoutCalls = 2;
         static constexpr size_t kGenericLogPosition = 3;
 
         //------------------------------------------ methods

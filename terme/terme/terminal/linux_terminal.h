@@ -1,8 +1,11 @@
 #pragma once
-#include <terme/terminal/base_terminal.h>
-#include <nbkit/singleton.h>
+
+#include "terme/terminal/base_terminal.h"
+
 #include <termios.h>
 #include <optional>
+
+#include <nbkit/singleton.h>
 
 namespace terme
 {

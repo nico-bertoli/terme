@@ -1,6 +1,7 @@
+#include "terme/terminal/base_terminal.h"
+#include "terme/managers/debug_manager.h"
+
 #include <cassert>
-#include <terme/terminal/base_terminal.h>
-#include <terme/managers/debug_manager.h>
 
 namespace terme
 {

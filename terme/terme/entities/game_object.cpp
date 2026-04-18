@@ -1,6 +1,8 @@
-#include <terme/entities/game_object.h>
-#include <terme/managers/time_manager.h>
-#include <terme/core/simulation.h>
+#include "terme/entities/game_object.h"
+#include "terme/core/simulation.h"
+#include "terme/managers/time_manager.h"
+
+#include <cmath>
 
 namespace terme
 {
@@ -55,14 +57,14 @@ namespace terme
 
 		if (direction == Direction::kLeft || direction == Direction::kRight)
 		{
-			if (round(x_pos_continuous_) != x_pos_)
+			if (std::round(x_pos_continuous_) != x_pos_)
 				Simulation::Instance().RequestMovement(this, direction, move_speed);
 		}
-		else if (round(y_pos_continuous_) != y_pos_)
+		else if (std::round(y_pos_continuous_) != y_pos_)
 			Simulation::Instance().RequestMovement(this, direction, move_speed);
 	}
 
-	Model GameObject::CreteModelUsingChar(char model_char, size_t size_x, size_t size_y) const
+	Model GameObject::CreateModelUsingChar(char model_char, size_t size_x, size_t size_y) const
 	{
 		Model result;
 		result.Resize(size_x, size_y);
@@ -83,7 +85,7 @@ namespace terme
 		Simulation::Instance().MarkAreaToReprint(this);
 	}
 
-	void GameObject::CalledBySimMove(Direction direction)
+	void GameObject::CalledBySim_Move(Direction direction)
 	{
 		switch (direction)
 		{
@@ -104,6 +106,6 @@ namespace terme
 			x_pos_continuous_ = x_pos_;
 			break;
 		}
-		on_move.Notify(this, direction);
+		on_move_.Notify(this, direction);
 	}
 }

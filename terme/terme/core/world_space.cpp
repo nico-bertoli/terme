@@ -1,6 +1,6 @@
-#include <terme/core/world_space.h>
-#include <terme/entities/collider.h>
-#include <terme/entities/game_object.h>
+#include "terme/core/world_space.h"
+#include "terme/entities/collider.h"
+#include "terme/entities/game_object.h"
 
 #include <algorithm>
 

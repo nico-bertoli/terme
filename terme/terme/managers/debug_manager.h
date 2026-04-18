@@ -1,11 +1,12 @@
 #pragma once
 
-#include <nbkit/singleton.h>
-#include <terme/managers/debug_manager.h>
-#include <terme/printers/debug_printer.h>
+#include "terme/printers/debug_printer.h"
+
 #include <list>
-#include <string>
 #include <memory>
+#include <string>
+
+#include <nbkit/singleton.h>
 
 namespace terme
 {
@@ -16,21 +17,21 @@ namespace terme
 	private:
 		static constexpr double kRefreshFpsEverySeconds = 0.5;
 		//---------------------------------------------------------- fields
-		std::unique_ptr<DebugPrinter> debugPrinter;
+		std::unique_ptr<DebugPrinter> debug_printer_;
 
-		//fps
-		std::list<double> fpsRecord;
-		double lastTimePrintedFps = 0;
-		double averageFPS = 0;
+//fps
+		std::list<double> fps_record_;
+		double last_time_printed_fps_ = 0;
+		double average_fps_ = 0;
 
 		//cout calls
-		int coutCallsCount = 0;
+		int cout_calls_count_ = 0;
 		//---------------------------------------------------------- methods
 	public:
-		void Reset(size_t screenSizeX, size_t screenSizeY, size_t screenPadding);
+		void Reset(size_t screen_size_x, size_t screen_size_y, size_t screen_padding);
 		void ShowAverageFPS();
 		void IncrementCoutCalls();
-		void PrintGenericLog(const std::string& str, int lineIndex);
+		void PrintGenericLog(const std::string& str, int line_index);
 
 	private:
 		size_t GetAverageFps();

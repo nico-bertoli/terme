@@ -32,7 +32,7 @@ namespace terme
 
     class BaseInputManager 
     {
-public:
+    public:
         virtual bool IsKeyPressed(Key key) = 0;
         virtual bool IsAnyKeyPressed() = 0;
     };

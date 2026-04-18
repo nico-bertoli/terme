@@ -1,6 +1,7 @@
 #pragma once
-#include <stdexcept>
+
 #include <cassert>
+#include <stdexcept>
 
 namespace terme
 {

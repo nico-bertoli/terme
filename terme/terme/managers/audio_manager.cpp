@@ -1,12 +1,13 @@
-#include <terme/settings.h>
+#include "terme/settings.h"
 
 #define MINIAUDIO_IMPLEMENTATION
 #include <miniaudio.h>
 
-#include <terme/managers/audio_manager.h>
-#include <nbkit/random_utils.h>
+#include "terme/managers/audio_manager.h"
 
 #include <array>
+
+#include <nbkit/random_utils.h>
 
 namespace terme
 {
@@ -21,18 +22,18 @@ namespace terme
 		struct AudioState
 		{
 			ma_engine engine{};
-			bool engineOk = false;
+			bool engine_ok = false;
 			std::array<FxSlot, 6> fx{};
 			FxSlot music{};
 		};
 
 		AudioState& State()
 		{
-			static AudioState s;
-			return s;
+			static AudioState audio_state;
+			return audio_state;
 		}
 
-		bool TryGetFxSlot(unsigned& outIndex)
+		bool TryGetFxSlot(unsigned& out_index)
 		{
 			AudioState& st = State();
 			for (unsigned i = 0; i < st.fx.size(); ++i)
@@ -40,7 +41,7 @@ namespace terme
 				FxSlot& slot = st.fx[i];
 				if (!slot.initialized || !ma_sound_is_playing(&slot.sound))
 				{
-					outIndex = i;
+					out_index = i;
 					return true;
 				}
 			}
@@ -53,17 +54,17 @@ namespace terme
 		AudioState& st = State();
 		if (ma_engine_init(nullptr, &st.engine) == MA_SUCCESS)
 		{
-			st.engineOk = true;
-			
-			static constexpr float volume = settings::kAllowSounds ? 1.0f : 0.0f;
-			ma_engine_set_volume(&st.engine, volume);
+			st.engine_ok = true;
+
+			static constexpr float kVolume = settings::kAllowSounds ? 1.0f : 0.0f;
+			ma_engine_set_volume(&st.engine, kVolume);
 		}
 	}
 
-	void AudioManager::PlayFx(const char* fileName, const double randomPitch)
+	void AudioManager::PlayFx(const char* file_name, const double random_pitch)
 	{
 		AudioState& st = State();
-		if (!st.engineOk)
+		if (!st.engine_ok)
 			return;
 
 		unsigned index = 0;
@@ -77,14 +78,14 @@ namespace terme
 			slot.initialized = false;
 		}
 
-		if (ma_sound_init_from_file(&st.engine, fileName, 0, nullptr, nullptr, &slot.sound) != MA_SUCCESS)
+		if (ma_sound_init_from_file(&st.engine, file_name, 0, nullptr, nullptr, &slot.sound) != MA_SUCCESS)
 			return;
 
 		slot.initialized = true;
 
 		float pitch = 1.f;
-		if (randomPitch != 0.0)
-			pitch += static_cast<float>(nbkit::random_utils::GetRandomDouble(1.0 - randomPitch, 1.0 + randomPitch));
+		if (random_pitch != 0.0)
+			pitch += static_cast<float>(nbkit::random_utils::GetRandomDouble(1.0 - random_pitch, 1.0 + random_pitch));
 		ma_sound_set_pitch(&slot.sound, pitch);
 
 		if (ma_sound_start(&slot.sound) != MA_SUCCESS)
@@ -94,15 +95,15 @@ namespace terme
 		}
 	}
 
-	void AudioManager::PlayMusic(const char* fileName)
+	void AudioManager::PlayMusic(const char* file_name)
 	{
 		AudioState& st = State();
-		if (!st.engineOk)
+		if (!st.engine_ok)
 			return;
 
 		StopMusic();
 
-		if (ma_sound_init_from_file(&st.engine, fileName, MA_SOUND_FLAG_STREAM, nullptr, nullptr, &st.music.sound) != MA_SUCCESS)
+		if (ma_sound_init_from_file(&st.engine, file_name, MA_SOUND_FLAG_STREAM, nullptr, nullptr, &st.music.sound) != MA_SUCCESS)
 			return;
 
 		st.music.initialized = true;

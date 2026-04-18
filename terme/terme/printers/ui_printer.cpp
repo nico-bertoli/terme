@@ -1,4 +1,6 @@
-#include <terme/printers/ui_printer.h>
+#include "terme/printers/ui_printer.h"
+
+#include <cassert>
 
 using std::string;
 
@@ -33,7 +35,7 @@ namespace terme
         {
             string line = "";
             for (size_t x = 0; x < window.GetSizeX(); ++x)
-                line += window.chars.Get(x, y);
+                line += window.chars_.Get(x, y);
 
             terminal_.SetCursorPosition(left_window_offset + kLeftMarginSize, y + print_start_y);
             terminal_.Cout(line);

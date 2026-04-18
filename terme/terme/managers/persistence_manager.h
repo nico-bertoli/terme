@@ -1,9 +1,11 @@
 #pragma once
-#include <string>
+
+#include "terme/settings.h"
+#include "terme/managers/debug_manager.h"
+
 #include <fstream>
 #include <sstream>
-
-#include <terme/managers/debug_manager.h>
+#include <string>
 
 namespace terme
 {

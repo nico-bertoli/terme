@@ -1,6 +1,4 @@
 #pragma once
-#include <terme/managers/debug_manager.h>
-#include <string>
 
 namespace terme
 {

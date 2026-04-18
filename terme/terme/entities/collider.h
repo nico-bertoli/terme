@@ -1,5 +1,7 @@
 #pragma once
-#include <terme/entities/game_object.h>
+
+#include "terme/entities/game_object.h"
+
 #include <array>
 #include <list>
 #include <unordered_set>

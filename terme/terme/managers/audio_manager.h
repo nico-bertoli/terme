@@ -1,5 +1,5 @@
 #pragma once
-#include <terme/settings.h>
+
 #include <nbkit/singleton.h>
 
 namespace terme
@@ -10,8 +10,8 @@ namespace terme
 
 		//---------------------------------------------------------- methods
 	public:
-		void PlayFx(const char* fileName, double randomPitch = 0.0);
-		void PlayMusic(const char* fileName);
+		void PlayFx(const char* file_name, double random_pitch = 0.0);
+		void PlayMusic(const char* file_name);
 		void StopMusic();
 
 	private:

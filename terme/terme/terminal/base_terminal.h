@@ -1,9 +1,9 @@
 #pragma once
-#include <string>
-#include <iostream>
 
-#include <nbkit/singleton.h>
-#include <terme/general/vector2_int.h>
+#include "terme/general/vector2_int.h"
+
+#include <iostream>
+#include <string>
 
 namespace terme
 {

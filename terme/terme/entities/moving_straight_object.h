@@ -1,8 +1,10 @@
 #pragma once
-#include <terme/entities/collider.h>
-#include <iostream>
-#include <stdlib.h>
+
+#include "terme/entities/collider.h"
+
 #include <cassert>
+#include <cstdlib>
+#include <iostream>
 
 namespace terme
 {

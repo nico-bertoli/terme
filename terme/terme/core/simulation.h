@@ -1,14 +1,15 @@
 #pragma once
 
-#include <terme/settings.h>
-#include <terme/core/world_space.h>
-#include <terme/printers/ui_printer.h>
-#include <terme/printers/simulation_printer.h>
+#include "terme/core/world_space.h"
+#include "terme/printers/simulation_printer.h"
+#include "terme/printers/ui_printer.h"
+
 #include <list>
+#include <memory>
+#include <optional>
 #include <unordered_map>
 #include <unordered_set>
-#include <optional>
-#include <memory>
+
 #include <nbkit/singleton.h>
 
 namespace terme
@@ -41,8 +42,8 @@ namespace terme
 
 		//------------------------------------------------------------------------------------ fields
 	public:
-		nbkit::Event<> on_frame_generated;
-		nbkit::Event<> on_simulation_stepped;
+		nbkit::Event<> on_frame_generated_;
+		nbkit::Event<> on_simulation_stepped_;
 
 	private:
 		std::unique_ptr<SimulationPrinter> simulation_printer_;

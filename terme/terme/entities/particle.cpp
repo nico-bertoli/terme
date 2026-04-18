@@ -1,7 +1,7 @@
-#include <terme/entities/particle.h>
+#include "terme/entities/particle.h"
+#include "terme/core/simulation.h"
+
 #include <nbkit/random_utils.h>
-#include <terme/core/direction.h>
-#include <terme/core/simulation.h>
 
 namespace terme
 {
@@ -52,12 +52,12 @@ namespace terme
 			if (direction_utils::IsDirectionHorizontal(move_directions_[i]))
 				move_speeds_[i] *= 2;
 
-		on_move.Subscribe([this](GameObject*, Direction) { OnMoveCallback(); });
+		on_move_.Subscribe([this](GameObject*, Direction) { OnMoveCallback(); });
 	}
 
 	void Particle::InitModel()
 	{
-		model_ = CreteModelUsingChar(model_char_, 1, 1);
+		model_ = CreateModelUsingChar(model_char_, 1, 1);
 		SetModel(model_);
 	}
 

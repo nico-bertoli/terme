@@ -1,23 +1,23 @@
 #pragma once
-#include <terme/settings.h>
-#include <nbkit/matrix.h>
 
-#include <vector>
+#include <cassert>
 #include <fstream>
 #include <iostream>
-#include <cassert>
 #include <string>
+#include <vector>
+
+#include <nbkit/matrix.h>
 
 namespace terme
 {
     class Frame
     {
     public:
-        nbkit::Matrix<char> chars;
+        nbkit::Matrix<char> chars_;
 
     public:
-        size_t GetSizeY() const { return chars.GetSizeY(); }
-        size_t GetSizeX() const { return chars.GetSizeX(); }
+        size_t GetSizeY() const { return chars_.GetSizeY(); }
+        size_t GetSizeX() const { return chars_.GetSizeX(); }
 
         void ReadFromFile(const char* file_name);
         void WriteString(const std::string& written_string, char write_over_char);

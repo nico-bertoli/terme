@@ -1,6 +1,5 @@
-#include <terme/entities/collider.h>
-#include <terme/managers/time_manager.h>
-#include <terme/core/simulation.h>
+#include "terme/entities/collider.h"
+#include "terme/core/simulation.h"
 
 using std::list;
 using std::unordered_set;

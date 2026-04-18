@@ -1,8 +1,8 @@
-#include <string>
+#include "terme/printers/debug_printer.h"
+#include "terme/managers/debug_manager.h"
+#include "terme/general/vector2_int.h"
 
-#include <terme/managers/debug_manager.h>
-#include <terme/printers/debug_printer.h>
-#include <terme/general/vector2_int.h>
+#include <string>
 
 using std::string;
 
@@ -14,7 +14,7 @@ namespace terme
         TerminalColor originalBackColor = Terminal::Instance().GetBackColor();
 
         Terminal::Instance().SetColor(kDebugColor);
-        terminal_.SetCursorPosition(0, GetMaxTerminalY() + kPositoinCoutCalls);
+        terminal_.SetCursorPosition(0, GetMaxTerminalY() + kPositionCoutCalls);
         //final space makes sure old string is cleared
         string output = "COUT CALLS: " + std::to_string(cout_calls_count) + string("     ");
         std::cout << output;

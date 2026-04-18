@@ -1,21 +1,22 @@
-#include <terme/core/simulation.h>
-#include <terme/entities/collider.h>
-#include <terme/entities/i_simulation_entity.h>
-#include <terme/entities/game_object.h>
-#include <terme/entities/level.h>
-#include <terme/managers/time_manager.h>
-#include <terme/core/world_space.h>
-#include <terme/managers/debug_manager.h>
-#include <terme/entities/particle.h>
-#include <terme/terminal/terminal.h>
-
-#include <nbkit/random_utils.h>
+#include "terme/settings.h"
+#include "terme/core/simulation.h"
+#include "terme/core/world_space.h"
+#include "terme/entities/collider.h"
+#include "terme/entities/game_object.h"
+#include "terme/entities/i_simulation_entity.h"
+#include "terme/entities/level.h"
+#include "terme/entities/particle.h"
+#include "terme/managers/debug_manager.h"
+#include "terme/managers/time_manager.h"
+#include "terme/terminal/terminal.h"
 
 #include <algorithm>
+#include <array>
 #include <cassert>
 #include <stdexcept>
-#include <array>
 #include <utility>
+
+#include <nbkit/random_utils.h>
 
 using std::unordered_set;
 using std::list;
@@ -134,10 +135,10 @@ namespace terme
 			for (int x = pos_x; x < pos_x + width; ++x)
 			{
 				//add particles depending on density int part
-				for (int density = 0; density <= density_int_part; ++density)
+				for (int density_index = 0; density_index <= density_int_part; ++density_index)
 				{
 					//add particles depending on density fractional part
-					if (density == density_int_part && nbkit::random_utils::GetRandomDouble(0, 1) > density_decimal_part)
+					if (density_index == density_int_part && nbkit::random_utils::GetRandomDouble(0, 1) > density_decimal_part)
 						continue;
 
 					std::unique_ptr<ISimulationEntity> particle = std::make_unique<Particle>(x, y, model_char, color, speed, movement_life_time, main_direction);
@@ -171,11 +172,11 @@ namespace terme
 		bool has_new_frame_been_generated = PrintObjects();
 		if (has_new_frame_been_generated)
 		{
-			on_frame_generated.Notify();
+			on_frame_generated_.Notify();
 			DebugManager::Instance().ShowAverageFPS();
 		}
 
-		on_simulation_stepped.Notify();
+		on_simulation_stepped_.Notify();
 	}
 
 	void Simulation::RequestMovement(GameObject* applicant_obj, Direction move_direction, double move_speed)
@@ -403,7 +404,7 @@ namespace terme
 
 		world_space_.MoveObject(obj, direction);
 
-		obj->CalledBySimMove(direction);
+		obj->CalledBySim_Move(direction);
 
 		return true;
 	}

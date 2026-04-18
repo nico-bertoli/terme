@@ -1,5 +1,6 @@
 #pragma once
-#include <terme/entities/collider.h>
+
+#include "terme/entities/collider.h"
 
 namespace terme
 {
@@ -25,7 +26,7 @@ namespace terme
             model_size_y_(model_size_y),
             model_char_(model_char)
         {
-            model_ = CreteModelUsingChar(model_char, model_size_x, model_size_y);
+            model_ = CreateModelUsingChar(model_char, model_size_x, model_size_y);
         }
 
     protected:

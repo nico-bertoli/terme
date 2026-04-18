@@ -1,8 +1,8 @@
 #pragma once
 
-#include <terme/entities/i_simulation_entity.h>
-#include <terme/terminal/terminal.h>
-#include <terme/core/frame.h>
+#include "terme/core/frame.h"
+#include "terme/entities/i_simulation_entity.h"
+#include "terme/terminal/terminal.h"
 
 namespace terme
 {
@@ -12,7 +12,7 @@ namespace terme
 
         //---------------------------------------------------------- settings
     private:
-        constexpr static double kPressAnyKeyToTerminateGameDelay = 1.5;
+        static constexpr double kPressAnyKeyToTerminateGameDelay = 1.5;
 
         //---------------------------------------------------------- fields
     private:

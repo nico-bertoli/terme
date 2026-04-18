@@ -1,5 +1,6 @@
 #pragma once
-#include <terme/terminal/terminal.h>
+
+#include "terme/terminal/terminal.h"
 
 namespace terme
 {

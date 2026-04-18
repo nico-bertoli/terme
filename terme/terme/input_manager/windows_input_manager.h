@@ -1,8 +1,12 @@
 #pragma once
-#include <windows.h>
+
+#include "terme/input_manager/base_input_manager.h"
+
 #include <unordered_map>
+
 #include <nbkit/singleton.h>
-#include <terme/input_manager/base_input_manager.h>
+
+#include <windows.h>
 
 namespace terme
 {
@@ -35,7 +39,7 @@ private:
     };
     
 public:
-    inline bool IsKeyPressed(Key key)
+    inline bool IsKeyPressed(Key key) override
     {
         if (kKeyMap.find(key) != kKeyMap.end())
             return GetAsyncKeyState(kKeyMap.at(key)) & 0x8000;
@@ -43,7 +47,7 @@ public:
         return false;
     }
 
-    inline bool IsAnyKeyPressed()
+    inline bool IsAnyKeyPressed() override
     {
         for (int i = 0; i < 256; ++i)
             if (GetAsyncKeyState(i) & 0x8000)

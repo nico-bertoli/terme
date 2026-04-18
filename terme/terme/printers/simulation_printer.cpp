@@ -1,15 +1,13 @@
-#include <terme/printers/simulation_printer.h>
+#include "terme/printers/simulation_printer.h"
+#include "terme/core/simulation.h"
+#include "terme/entities/collider.h"
+#include "terme/entities/game_object.h"
+#include "terme/entities/level.h"
+#include "terme/managers/debug_manager.h"
+#include "terme/managers/time_manager.h"
 
-#include <terme/entities/collider.h>
-#include <terme/entities/game_object.h>
-#include <terme/core/simulation.h>
-#include <terme/settings.h>
-#include <terme/entities/level.h>
-#include <terme/managers/time_manager.h>
-#include <terme/managers/debug_manager.h>
-
-#include <cassert>
 #include <algorithm>
+#include <cassert>
 
 using std::string;
 
@@ -58,7 +56,7 @@ namespace terme
                 if (x_screen + kLeftMarginSize < kLeftMarginSize)continue;
 
                 if (go == nullptr)
-                    line += background_.IsSetup() ? background_.chars.Get(x_screen, screen_size_y_ - y_screen - 1) : ' ';
+                    line += background_.IsSetup() ? background_.chars_.Get(x_screen, screen_size_y_ - y_screen - 1) : ' ';
                 else
                     line += go->GetModel().Get(x_model, go->GetModelHeight() - 1 - y_model);
             }
@@ -84,7 +82,7 @@ namespace terme
             for (int x = 0; x < screen_size_x_; ++x)
             {
                 //reversing y order
-                char char_to_print = background_.chars.Get(x, y);
+                char char_to_print = background_.chars_.Get(x, y);
                 line += char_to_print;
             }
             terminal_.SetCursorPosition(kLeftMarginSize, y + kTopMarginSize);

@@ -1,11 +1,13 @@
 #pragma once
-#include <X11/Xlib.h>
-#include <X11/keysym.h>
+
+#include "terme/input_manager/base_input_manager.h"
 
 #include <unordered_map>
 
 #include <nbkit/singleton.h>
-#include <terme/input_manager/base_input_manager.h>
+
+#include <X11/Xlib.h>
+#include <X11/keysym.h>
 
 namespace terme
 {
@@ -37,60 +39,60 @@ private:
         {Key::kEsc,        XK_Escape}
     };
 
-    Display* display = nullptr;
+    Display* display_ = nullptr;
 
 public:
     LinuxInputManager()
     {
         XInitThreads();
-        display = XOpenDisplay(nullptr);
+        display_ = XOpenDisplay(nullptr);
     }
 
     ~LinuxInputManager()
     {
-        if (display != nullptr)
+        if (display_ != nullptr)
         {
-            XCloseDisplay(display);
-            display = nullptr;
+            XCloseDisplay(display_);
+            display_ = nullptr;
         }
     }
 
     inline bool IsKeyPressed(Key key) override
     {
-        if (display == nullptr)
+        if (display_ == nullptr)
             return false;
 
         auto mapping = kKeyMap.find(key);
         if (mapping == kKeyMap.end())
             return false;
 
-        const KeyCode keyCode = XKeysymToKeycode(display, mapping->second);
-        if (keyCode == 0)
+        const KeyCode key_code = XKeysymToKeycode(display_, mapping->second);
+        if (key_code == 0)
             return false;
 
         char keys[32] = {0};
-        XLockDisplay(display);
-        XQueryKeymap(display, keys);
-        XUnlockDisplay(display);
+        XLockDisplay(display_);
+        XQueryKeymap(display_, keys);
+        XUnlockDisplay(display_);
 
-        const int byteIndex = keyCode / 8;
-        const int bitIndex = keyCode % 8;
-        return (keys[byteIndex] & (1 << bitIndex)) != 0;
+        const int byte_index = key_code / 8;
+        const int bit_index = key_code % 8;
+        return (keys[byte_index] & (1 << bit_index)) != 0;
     }
 
     inline bool IsAnyKeyPressed() override
     {
-        if (display == nullptr)
+        if (display_ == nullptr)
             return false;
 
         char keys[32] = {0};
-        XLockDisplay(display);
-        XQueryKeymap(display, keys);
-        XUnlockDisplay(display);
+        XLockDisplay(display_);
+        XQueryKeymap(display_, keys);
+        XUnlockDisplay(display_);
 
-        for (const char keyState : keys)
+        for (const char key_state : keys)
         {
-            if (keyState != 0)
+            if (key_state != 0)
                 return true;
         }
 

@@ -1,15 +1,14 @@
-#include <terme/settings.h>
+#include "terme/settings.h"
 
 #if IS_LINUX_BUILD
 
-#include <terme/terminal/terminal.h>
-#include <terme/managers/debug_manager.h>
+#include "terme/terminal/terminal.h"
 
+#include <cstring>
 #include <iostream>
 #include <string>
-#include <unistd.h> 
 #include <termios.h>
-#include <cstring>
+#include <unistd.h>
 
 using std::cout;
 
@@ -23,12 +22,12 @@ namespace terme
             // save original termios
             original_termios_ = original;
             
-            termios newTermios;
-            std::memcpy(&newTermios, &original, sizeof(termios));
+            termios new_termios;
+            std::memcpy(&new_termios, &original, sizeof(termios));
             
             // prevents characters from being printed
-            newTermios.c_lflag &= ~(ICANON | ECHO);
-            tcsetattr(STDIN_FILENO, TCSANOW, &newTermios);
+            new_termios.c_lflag &= ~(ICANON | ECHO);
+            tcsetattr(STDIN_FILENO, TCSANOW, &new_termios);
         }
         
         HideCursor();
@@ -63,7 +62,7 @@ namespace terme
 
     void LinuxTerminal::SetCursorPosition(const vector2_int& position)
     {
-        std::cout << "\033[" << (position.Y + 1) << ';' << (position.X + 1) << 'H';
+        std::cout << "\033[" << (position.y + 1) << ';' << (position.x + 1) << 'H';
     }
 }
 

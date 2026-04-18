@@ -1,6 +1,7 @@
 #pragma once
 
-#include <terme/entities/collider.h>
+#include "terme/entities/collider.h"
+
 #include <cassert>
 
 namespace terme

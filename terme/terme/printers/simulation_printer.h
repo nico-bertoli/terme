@@ -1,10 +1,12 @@
 #pragma once
-#include <terme/settings.h>
-#include <terme/core/frame.h>
-#include <terme/terminal/terminal.h>
-#include <terme/printers/printer.h>
+
+#include "terme/core/frame.h"
+#include "terme/printers/printer.h"
+#include "terme/terminal/terminal.h"
+
 #include <list>
 #include <string>
+
 namespace terme
 {
 	class GameObject;

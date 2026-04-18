@@ -1,11 +1,12 @@
 #pragma once
-#include <terme/settings.h>
-#include <terme/core/direction.h>
-#include <terme/entities/i_simulation_entity.h>
-#include <terme/terminal/terminal.h>
-#include <terme/general/vector2_int.h>
-#include <nbkit/matrix.h>
+
+#include "terme/core/direction.h"
+#include "terme/entities/i_simulation_entity.h"
+#include "terme/general/vector2_int.h"
+#include "terme/terminal/terminal.h"
+
 #include <nbkit/event.h>
+#include <nbkit/matrix.h>
 
 namespace terme
 {
@@ -17,7 +18,7 @@ namespace terme
 
 		//---------------------------------------------------------- fields
 	public:
-		nbkit::Event<GameObject*, Direction> on_move;
+		nbkit::Event<GameObject*, Direction> on_move_;
 		// generic on destroy event could be added
 
 	protected:
@@ -59,13 +60,13 @@ namespace terme
 		virtual void OnDestroy() {} // called by simulation
 		virtual void TryMove(Direction direction, double move_speed);
 		void Update()override;
-		Model CreteModelUsingChar(char model_char, size_t size_x, size_t size_y) const;
+		Model CreateModelUsingChar(char model_char, size_t size_x, size_t size_y) const;
 		void SetModel(const Model& new_model);
 
 	private:
 		void ResetPartialMovement() { x_pos_continuous_ = x_pos_; y_pos_continuous_ = y_pos_; }
 		void ApplyGravity();
-		void CalledBySimMove(Direction direction);
+		void CalledBySim_Move(Direction direction);
 	};
 
 

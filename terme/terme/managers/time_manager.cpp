@@ -1,5 +1,5 @@
-#include <terme/managers/time_manager.h>
-#include <terme/core/simulation.h>
+#include "terme/core/simulation.h"
+#include "terme/managers/time_manager.h"
 
 #include <chrono>
 #include <cmath>
@@ -11,16 +11,16 @@ namespace terme
 {
     void TimeManager::OnFrameGenerated()
     {
-        double currentTime = GetTime();
-        delta_time_ = currentTime - last_time_frame_generated_;
-        last_time_frame_generated_ = currentTime;
+        double current_time = GetTime();
+        delta_time_ = current_time - last_time_frame_generated_;
+        last_time_frame_generated_ = current_time;
     }
 
     void TimeManager::OnSimulationStepped()
     {
-        double currentTime = GetTime();
-        fixed_delta_time_ = currentTime - last_time_simulation_stepped_;
-        last_time_simulation_stepped_ = currentTime;
+        double current_time = GetTime();
+        fixed_delta_time_ = current_time - last_time_simulation_stepped_;
+        last_time_simulation_stepped_ = current_time;
     }
 
     bool TimeManager::IsTimeForFirstOfTwoModels(double change_model_every_seconds) const
@@ -42,8 +42,8 @@ namespace terme
 
     TimeManager::TimeManager()
     {
-        Simulation::Instance().on_frame_generated.Subscribe([this]() { OnFrameGenerated(); });
-        Simulation::Instance().on_simulation_stepped.Subscribe([this]() { OnSimulationStepped(); });
+        Simulation::Instance().on_frame_generated_.Subscribe([this]() { OnFrameGenerated(); });
+        Simulation::Instance().on_simulation_stepped_.Subscribe([this]() { OnSimulationStepped(); });
         start_time_ = steady_clock::now();
     }
 }

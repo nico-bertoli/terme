@@ -1,8 +1,8 @@
 #pragma once
-#include <nbkit/singleton.h>
 
 #include <chrono>
-#include <math.h>
+
+#include <nbkit/singleton.h>
 
 namespace terme
 {
