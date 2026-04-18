@@ -6,9 +6,21 @@
 
 namespace terme
 {
-	void DebugManager::PrintGenericLog(const std::string& str, int line_index)
+	void DebugManager::Log(const std::string& str)
 	{
-		debug_printer_->PrintGenericLog(str, line_index);
+		if constexpr (settings::kDebug == false)
+			return;
+
+		if (!log_file_.is_open())
+		{
+			log_file_.clear();
+			log_file_.open(settings::kDebugLogFilePath, std::ios::out | std::ios::app);
+			if (!log_file_)
+				return;
+		}
+
+		log_file_ << str << '\n';
+		log_file_.flush();
 	}
 
 	void DebugManager::Reset
@@ -25,6 +37,10 @@ namespace terme
 		cout_calls_count_ = 0;
 
 		debug_printer_ = std::make_unique<DebugPrinter>(screen_size_x, screen_size_y, screen_padding);
+
+		log_file_.close();
+		log_file_.clear();
+		log_file_.open(settings::kDebugLogFilePath, std::ios::out | std::ios::app);
 	}
 
 	void DebugManager::ShowAverageFPS()

@@ -20,7 +20,7 @@ namespace terme
 #if DEBUG
 				std::stringstream s;
 				s << "[persistence manager] failed to save best score at: " << persistence_file;
-				DebugManager::Instance().PrintGenericLog(s.str(), 0);
+				DebugManager::Instance().Log(s.str());
 #endif
 			}
 			else
@@ -44,7 +44,7 @@ namespace terme
 				{
 					std::stringstream s;
 					s << "[persistence manager] failed to load or create persistence file at: " << persistence_file;
-					DebugManager::Instance().PrintGenericLog(s.str(), 1);
+					DebugManager::Instance().Log(s.str());
 				}
 #endif
 				return -1;

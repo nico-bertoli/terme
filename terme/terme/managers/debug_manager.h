@@ -2,6 +2,7 @@
 
 #include "terme/printers/debug_printer.h"
 
+#include <fstream>
 #include <list>
 #include <memory>
 #include <string>
@@ -18,6 +19,7 @@ namespace terme
 		static constexpr double kRefreshFpsEverySeconds = 0.5;
 		//---------------------------------------------------------- fields
 		std::unique_ptr<DebugPrinter> debug_printer_;
+		std::ofstream log_file_;
 
 //fps
 		std::list<double> fps_record_;
@@ -31,7 +33,7 @@ namespace terme
 		void Reset(size_t screen_size_x, size_t screen_size_y, size_t screen_padding);
 		void ShowAverageFPS();
 		void IncrementCoutCalls();
-		void PrintGenericLog(const std::string& str, int line_index);
+		void Log(const std::string& str); //you can use tail -f logs.txt to see logs live
 
 	private:
 		size_t GetAverageFps();

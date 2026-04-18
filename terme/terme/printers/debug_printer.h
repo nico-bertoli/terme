@@ -15,7 +15,6 @@ namespace terme
         static constexpr TerminalColor kDebugColor = color::kCyan;
         static constexpr size_t kFpsPosition = 1;
         static constexpr size_t kPositionCoutCalls = 2;
-        static constexpr size_t kGenericLogPosition = 3;
 
         //------------------------------------------ methods
     public:
@@ -24,7 +23,6 @@ namespace terme
     public:
         void PrintCoutCallsCount(size_t cout_calls_count);
         void PrintFpsString(size_t fps);
-        void PrintGenericLog(const std::string& log, int line_index);
 
     };
 }

@@ -1,5 +1,4 @@
 #include "terme/printers/debug_printer.h"
-#include "terme/managers/debug_manager.h"
 #include "terme/general/vector2_int.h"
 
 #include <string>
@@ -28,13 +27,5 @@ namespace terme
         terminal_.SetCursorPosition(0, GetMaxTerminalY() + kFpsPosition);
         string output = "FPS: " + std::to_string(fps) + '\n';
         std::cout << output;
-    }
-
-    void DebugPrinter::PrintGenericLog(const string& log, int line_index)
-    {
-        terminal_.SetColor(kDebugColor);
-        terminal_.SetCursorPosition(0, GetMaxTerminalY() + kGenericLogPosition + line_index);
-        std::cout << log;
-        std::cout.flush();
     }
 }
