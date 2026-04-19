@@ -44,7 +44,15 @@ namespace terme
 
     void SimulationPrinter::PrintInternal(int world_x_pos, int world_y_pos, size_t x_size, size_t y_size, GameObject* go)
     {
-        terminal_.SetColor(go == nullptr ? nullptr : go->GetColor(), go == nullptr ? nullptr : go->GetBackColor());
+        if (go == nullptr)
+        {
+            if (background_.IsSetup())
+                terminal_.SetColor(bg_chars_color_, nullptr);
+            else
+                terminal_.SetColor(nullptr, nullptr);
+        }
+        else
+            terminal_.SetColor(go->GetColor(), go->GetBackColor());
         for (int y_screen = ConvertWorldPosToScreenPos(world_y_pos), y_model = 0; y_model < y_size && y_screen < screen_size_y_; ++y_screen, ++y_model)
         {
             if (y_screen + kTopMarginSize < kTopMarginSize) continue;
