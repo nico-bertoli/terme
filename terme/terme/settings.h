@@ -1,7 +1,7 @@
 #pragma once
 
 // settings
-#define DEBUG 1
+#define DEBUG 0
 
 namespace terme::settings
 {
