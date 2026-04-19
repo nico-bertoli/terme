@@ -6,7 +6,7 @@
 namespace terme::settings
 {
     static constexpr bool kDebug = DEBUG;
-    static constexpr bool kAllowSounds = false;
+    static constexpr bool kAllowSounds = true;
     static constexpr const char* kDebugLogFilePath = "logs.txt";
 }
 

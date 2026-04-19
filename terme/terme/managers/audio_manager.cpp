@@ -4,8 +4,10 @@
 #include <miniaudio.h>
 
 #include "terme/managers/audio_manager.h"
+#include "terme/managers/debug_manager.h"
 
 #include <array>
+#include <sstream>
 
 #include <nbkit/random_utils.h>
 
@@ -65,11 +67,21 @@ namespace terme
 	{
 		AudioState& st = State();
 		if (!st.engine_ok)
+		{
+			std::stringstream s;
+			s << "[audio_manager] PlayFx: engine not initialized (file: " << (file_name ? file_name : "(null)") << ')';
+			DebugManager::Instance().Log(s.str());
 			return;
+		}
 
 		unsigned index = 0;
 		if (!TryGetFxSlot(index))
+		{
+			std::stringstream s;
+			s << "[audio_manager] PlayFx: all FX slots busy (file: " << (file_name ? file_name : "(null)") << ')';
+			DebugManager::Instance().Log(s.str());
 			return;
+		}
 
 		FxSlot& slot = st.fx[index];
 		if (slot.initialized)
@@ -79,7 +91,12 @@ namespace terme
 		}
 
 		if (ma_sound_init_from_file(&st.engine, file_name, 0, nullptr, nullptr, &slot.sound) != MA_SUCCESS)
+		{
+			std::stringstream s;
+			s << "[audio_manager] PlayFx: failed to load sound (file: " << (file_name ? file_name : "(null)") << ')';
+			DebugManager::Instance().Log(s.str());
 			return;
+		}
 
 		slot.initialized = true;
 
@@ -90,6 +107,9 @@ namespace terme
 
 		if (ma_sound_start(&slot.sound) != MA_SUCCESS)
 		{
+			std::stringstream s;
+			s << "[audio_manager] PlayFx: failed to start playback (file: " << (file_name ? file_name : "(null)") << ')';
+			DebugManager::Instance().Log(s.str());
 			ma_sound_uninit(&slot.sound);
 			slot.initialized = false;
 		}
