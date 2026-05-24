@@ -1,7 +1,11 @@
+import subprocess
+from pathlib import Path
+
 from conan import ConanFile
 from conan.tools.cmake import CMake, CMakeToolchain, CMakeDeps, cmake_layout
-from conan.tools.files import copy
-import os
+
+_NBKIT_RECIPE = Path(__file__).resolve().parent / "conan" / "nbkit"
+
 
 class TermeConan(ConanFile):
     name = "terme"
@@ -10,6 +14,14 @@ class TermeConan(ConanFile):
     settings = "os", "compiler", "build_type", "arch"
 
     exports_sources = "CMakeLists.txt", "terme/*", "tests/*"
+
+    def configure(self):
+        if _NBKIT_RECIPE.is_dir():
+            subprocess.run(
+                ["conan", "export", str(_NBKIT_RECIPE), "--name=nbkit", "--version=1.0.0"],
+                check=True,
+                capture_output=True,
+            )
 
     def layout(self):
         cmake_layout(self)

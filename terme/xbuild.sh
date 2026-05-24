@@ -9,26 +9,6 @@ BUILD_TYPE="Release"
 mkdir -p build
 cd build || exit
 
-# ====================================================== helper (aligned with terme_examples/xbuild.sh)
-create_nbkit_from_github() {
-    echo "[INFO] Creating Conan package nbkit/1.0.0 from GitHub..."
-    TMP_DIR=$(mktemp -d)
-    git clone --depth 1 https://github.com/nico-bertoli/nbkit.git "$TMP_DIR/nbkit"
-    # No --user/--channel: must match requires("nbkit/1.0.0") in conanfile.py
-    conan create "$TMP_DIR/nbkit" --name=nbkit --version=1.0.0 \
-        -s "build_type=$BUILD_TYPE" -s compiler.cppstd=20 --build=missing || {
-        rm -rf "$TMP_DIR"
-        exit 1
-    }
-    rm -rf "$TMP_DIR"
-}
-
-if ! conan list "nbkit/1.0.0#*" 2>/dev/null | grep -q "revisions"; then
-    create_nbkit_from_github
-else
-    echo "[INFO] Found nbkit/1.0.0 in local cache."
-fi
-
 # ====================================================== x11 dev packages error message
 conan install .. --build=missing \
     -s "build_type=$BUILD_TYPE" \
